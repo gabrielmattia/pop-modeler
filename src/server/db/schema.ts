@@ -1,13 +1,12 @@
 // Example model schema from the Drizzle docs
 // https://orm.drizzle.team/docs/sql-schema-declaration
 
-import { sql } from "drizzle-orm";
 import {
   bigint,
   index,
   mysqlTableCreator,
+  text,
   timestamp,
-  varchar,
 } from "drizzle-orm/mysql-core";
 
 /**
@@ -18,17 +17,18 @@ import {
  */
 export const createTable = mysqlTableCreator((name) => `pop_modeler_${name}`);
 
-export const posts = createTable(
-  "post",
+export const user_table = createTable(
+  "user",
   {
     id: bigint("id", { mode: "number" }).primaryKey().autoincrement(),
-    name: varchar("name", { length: 256 }),
-    createdAt: timestamp("created_at")
-      .default(sql`CURRENT_TIMESTAMP`)
-      .notNull(),
-    updatedAt: timestamp("updated_at").onUpdateNow(),
+    name: text("name").notNull(),
+    password: text("password").notNull(),
+    email: text("email").notNull(),
+    rememberToken: text("rememberToken"),
+    createdAt: timestamp("created_at").notNull().defaultNow(),
   },
   (example) => ({
     nameIndex: index("name_idx").on(example.name),
-  })
+  }),
 );
+export type DB_UserType = typeof user_table.$inferSelect;
